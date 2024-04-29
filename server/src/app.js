@@ -22,7 +22,6 @@ app.use(
   })
 );
 app.use(cookieParser());
-console.log("app")
 
 app.use("/api/v1/users",userRouter)
 
