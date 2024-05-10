@@ -5,12 +5,17 @@ import jwt from "jsonwebtoken";
 
 export const verifyJwt = asyncHandler(async (req,_,next) => {
     try {
-        const token = JSON.stringify(req.cookies?.accessToken) || req.header("Authorization")?.replace("Bearer ","")
-        console.log("asjgfasg",token);
+        //console.log(req.header("Authorization")?.replace("Bearer",""))
+        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
+        
         if(!token){
+            
+            throw new ApiError(400, "Could not read token")
     
         }
+        
         const decodedToken = jwt.verify(token,process.env.ACCESS_TOKEN_SECRET);
+        
         const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
         if(!user){
             throw new ApiError(401, "Invalid access token")

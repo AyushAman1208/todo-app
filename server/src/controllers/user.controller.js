@@ -49,7 +49,6 @@ export const newUserSignIn = asyncHandler(async (req, res) => {
   if (password.length < 6) {
     throw new ApiError(400, "Password should be atleast 6 characters");
   }
-  console.log("controller");
   const user = await User.create({
     fullname,
     email,
@@ -104,7 +103,7 @@ export const existingUserLogin = asyncHandler(async (req, res) => {
   );
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: false,
   };
   res
     .status(200)
@@ -113,20 +112,28 @@ export const existingUserLogin = asyncHandler(async (req, res) => {
     .send(new ApiResponse(200, "User logged in successfully"));
 });
 
-export const userLogOut = asyncHandler(async (req,res) => {
-  const user = await User.findById(req.user._id,
-  {
-    $set: refreshToken = undefined
-  },
-{
-  new: true
-});
-const options = {
-  httpOnly: true,
-  secure: true
-}
 
-res.status(200).clearCookies("accessToken",options).
-clearCookies("refreshToken",options).send(new ApiResponse(200, "User logged out"));
+export const userLogOut = asyncHandler(async(req, res) => {
+  await User.findByIdAndUpdate(
+      req.user._id,
+      {
+          $unset: {
+              refreshToken: 1 // this removes the field from document
+          }
+      },
+      {
+          new: true
+      }
+  )
 
+  const options = {
+      httpOnly: true,
+      secure: true
+  }
+
+  return res
+  .status(200)
+  .clearCookie("accessToken", options)
+  .clearCookie("refreshToken", options)
+  .json(new ApiResponse(200, {}, "User logged Out"))
 })

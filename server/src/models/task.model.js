@@ -16,7 +16,7 @@ const taskSchema = new Schema({
         type: String
     },
     owner: {
-        type: [Schema.Types.ObjectId],
+        type: Schema.Types.ObjectId,
         ref: "User"
     }
 
