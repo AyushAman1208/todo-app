@@ -7,10 +7,7 @@ import taskRouter from "./routes/task.route.js";
 
 const app = express();
 app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true,
-  })
+  cors()
 );
 app.use(
   express.json({
